@@ -3,6 +3,7 @@ package com.eion.restapi.controller;
 import com.eion.restapi.payload.PostDto;
 import com.eion.restapi.payload.PostResponse;
 import com.eion.restapi.service.PostService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class PostController {
     private PostService postService;
 
     @PostMapping
-    private ResponseEntity<PostDto> createPosts(@RequestBody PostDto postDto) {
+    private ResponseEntity<PostDto> createPosts(@Valid @RequestBody PostDto postDto) {
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
 
@@ -37,7 +38,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Long id) {
+    public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable Long id) {
         return new ResponseEntity<>(postService.updatePost(postDto, id), HttpStatus.OK);
     }
 
