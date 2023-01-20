@@ -16,6 +16,7 @@ import lombok.Setter;
 public class CommentDto {
     private long id;
 
+
     @NotEmpty(message = "name should not be null or empty")
     @Size(min = 4, message = "name should be greater than 4 characters")
     private String name;
