@@ -77,7 +77,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto getPostById(Long id) {
-
         Post posts = postRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("post", "id", id));
         return mapToDTO(posts);
