@@ -25,13 +25,28 @@ public class CategoryController {
 
     //Build get Category Rest Api
     @GetMapping("{categoryId}")
-    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long categoryId){
-        return new ResponseEntity<>(categoryService.getCategory(categoryId),HttpStatus.OK);
+    public ResponseEntity<CategoryDto> getCategory(@PathVariable Long categoryId) {
+        return new ResponseEntity<>(categoryService.getCategory(categoryId), HttpStatus.OK);
     }
 
     //build get all categories rest api
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAllCategories(){
-        return new ResponseEntity<>(categoryService.getAllCategories(),HttpStatus.OK);
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
+    }
+
+    //build update Category API
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("{categoryId}")
+    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto,
+                                                      @PathVariable Long categoryId) {
+        return new ResponseEntity<>(categoryService.updateCategory(categoryDto, categoryId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId){
+        categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>("deleted successfully",HttpStatus.OK);
     }
 }

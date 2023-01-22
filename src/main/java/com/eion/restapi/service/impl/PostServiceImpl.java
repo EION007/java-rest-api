@@ -1,9 +1,11 @@
 package com.eion.restapi.service.impl;
 
+import com.eion.restapi.entity.Category;
 import com.eion.restapi.entity.Post;
 import com.eion.restapi.exception.ResourceNotFoundException;
 import com.eion.restapi.payload.PostDto;
 import com.eion.restapi.payload.PostResponse;
+import com.eion.restapi.repository.CategoryRepository;
 import com.eion.restapi.repository.PostRepository;
 import com.eion.restapi.service.PostService;
 import lombok.AllArgsConstructor;
@@ -23,11 +25,16 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
     private ModelMapper modelMapper;
+    private CategoryRepository categoryRepository;
 
     @Override
     public PostDto createPost(PostDto postDto) {
+        Category category = categoryRepository.findById(postDto.getCategoryId()).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "id", postDto.getCategoryId()));
+
         //convert DTO to entity
         Post post = mapToEntity(postDto);
+        post.setCategory(category);
         Post newPost = postRepository.save(post);
         //convert entity to DTO
         return mapToDTO(newPost);
@@ -87,9 +94,13 @@ public class PostServiceImpl implements PostService {
     public PostDto updatePost(PostDto postDto, Long id) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("post", "id", id));
+        Category category = categoryRepository.findById(postDto.getCategoryId()).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "id", postDto.getCategoryId()));
+
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
         post.setContent(postDto.getContent());
+        post.setCategory(category);
 
         Post updatedPost = postRepository.save(post);
 
@@ -102,5 +113,13 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("post", "id", id));
         postRepository.delete(post);
+    }
+
+    @Override
+    public List<PostDto> getPostByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("category", "id", categoryId));
+        List<Post> posts = postRepository.findByCategoryId(categoryId);
+        return posts.stream().map((post)-> mapToDTO(post)).collect(Collectors.toList());
     }
 }
