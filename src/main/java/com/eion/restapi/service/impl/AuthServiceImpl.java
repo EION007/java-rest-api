@@ -1,5 +1,6 @@
 package com.eion.restapi.service.impl;
 
+import com.eion.restapi.Security.JwtTokenProvider;
 import com.eion.restapi.entity.Role;
 import com.eion.restapi.entity.User;
 import com.eion.restapi.exception.BlogApiException;
@@ -27,13 +28,15 @@ public class AuthServiceImpl implements AuthService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Override
     public String login(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsernameOrEmail(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "user logged-in successfully!";
+
+        return jwtTokenProvider.generateToken(authentication);
     }
 
     @Override
