@@ -16,11 +16,11 @@ import static com.eion.restapi.utils.AppConstants.*;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping
 public class PostController {
     private PostService postService;
 
-    @PostMapping
+    @PostMapping("/api/posts")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PostDto> createPosts(@Valid @RequestBody PostDto postDto) {return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);}
 
@@ -29,27 +29,29 @@ public class PostController {
         return new ResponseEntity<>(postService.getAllPost(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/api/posts/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") Long id) {
         return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
     }
 
+
+
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PutMapping("/api/posts/{id}")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable Long id) {
         return new ResponseEntity<>(postService.updatePost(postDto, id), HttpStatus.OK);
     }
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/api/posts{id}")
     public ResponseEntity<String> deletePost(@PathVariable(value = "id") Long id) {
         postService.deletePost(id);
         return new ResponseEntity<>("post with :" + id + " Deleted", HttpStatus.OK);
     }
 
     //Build get posts by category REST API
-    @GetMapping("/category/{categoryId}")
+    @GetMapping("/api/posts/category/{categoryId}")
     public ResponseEntity<List<PostDto>> getPostByCategoryId(@PathVariable Long categoryId){
         return new ResponseEntity<>(postService.getPostByCategory(categoryId), HttpStatus.OK);
     }
