@@ -1,10 +1,11 @@
 package com.eion.restapi.Security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import com.eion.restapi.exception.BlogApiException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -46,5 +47,26 @@ public class JwtTokenProvider {
                 .getBody();
 
         return claims.getSubject();
+    }
+    // validate JWT token
+    public boolean validateToken(String token){
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parse(token);
+            return true;
+
+        }catch (MalformedJwtException ex){
+            throw new BlogApiException(HttpStatus.BAD_REQUEST,"invalid JWT token");
+        }
+        catch (ExpiredJwtException ex){
+            throw new BlogApiException(HttpStatus.BAD_REQUEST,"Expired JWT token");
+        }
+        catch (UnsupportedJwtException ex){
+            throw new BlogApiException(HttpStatus.BAD_REQUEST,"Unsupported  JWT token");
+        }catch (IllegalArgumentException ex){
+            throw new BlogApiException(HttpStatus.BAD_REQUEST,"Jwt claims String empty ");
+        }
     }
 }
